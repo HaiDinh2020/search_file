@@ -1,29 +1,35 @@
-import React, { useState } from 'react';
-import './App.css';
-import FileUpload from './Components/FileUpload';
-import SearchBar from './Components/SearchBar';
-import FileList from './Components/FileList';
+// App.js
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import ProductsPage from './Pages/ProductsPage.js';
+import HomePage from './Pages/HomePage';
+import Navbar from './Navigation/Navbar.js';
+import Sidebar from './Navigation/Sidebar.js';
+import { Container, Row, Col } from 'react-bootstrap';
+import './App.css'
 
-function App() {
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-
-  const handleFileUpload = (file) => {
-    setUploadedFiles([...uploadedFiles, file]);
-  };
-
-  const handleSearch = (value) => {
-
-  }
-
+const App = () => {
   return (
-    <div className="app-container">
-      <h1>Ứng dụng Tải lên Tệp và Tìm kiếm</h1>
-
-      <FileUpload onFileUpload={handleFileUpload} />
-      <SearchBar onSearch={handleSearch} />
-      <FileList files={uploadedFiles} />
-    </div>
+    <Router>
+      <div>
+        <Navbar />
+        <Container fluid className="g-0">
+                <Row >
+                    <Col xs={2} style={{backgroundColor: '#f7f9fc'}}>
+                        <Sidebar />
+                    </Col>
+                    <Col >
+                        <Routes>
+                            <Route path="/" element={<HomePage />} />
+                            <Route path="/important" element={<ProductsPage />} />
+                            
+                        </Routes>
+                    </Col>
+                </Row>
+            </Container>
+      </div>
+    </Router>
   );
-}
+};
 
 export default App;
