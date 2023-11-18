@@ -1,32 +1,31 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './FileUpload.css';
 
-function FileUpload({ onFileUpload }) {
-  const [selectedFile, setSelectedFile] = useState(null);
+function FileUpload() {
 
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
+  const handleUpload = async (event) => {
 
-  const handleUpload = async () => {
-    
-    if (selectedFile) {
+    if (event.target.files[0]) {
       const formData = new FormData();
-      formData.append('file', selectedFile);
+      formData.append('file', event.target.files[0]);
 
       try {
-        // Gửi tệp lên máy chủ
-        axios.post(`http://localhost:3000/upload`, { user: 'hellowworld' })
-        .then(res => {
-          console.log(res);
-          console.log(res.data);
-        })
-        // Gọi hàm callback để thông báo thành công
-        // onFileUpload(response.data);
+        console.log('Selected file:', event.target.files[0]);
 
-        // Đặt lại trạng thái
-        setSelectedFile(null);
+        axios.post(`http://localhost:8080/api/upload`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }).then((response) => {
+          if(response.status === 200) {
+            console.log(response)
+           alert(response.data)
+          } else {
+            alert("upload KHÔNG thành công")
+          }
+        })
+
+
       } catch (error) {
         console.error('Lỗi khi tải lên tệp:', error);
       }
@@ -35,8 +34,8 @@ function FileUpload({ onFileUpload }) {
 
   return (
     <div>
-      <input type="file" accept=".pdf, .doc, .docx" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Tải lên</button>
+      <input type="file" accept=".pdf,.doc,.docx" onChange={handleUpload} />
+      {/* <button onClick={() => setPopupVisible(false)}>Đóng</button> */}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Sidebar.css';
+import FileUpload from '../Components/FileUpload';
 
 const Sidebar = () => {
 
@@ -11,12 +12,7 @@ const Sidebar = () => {
     setPopupVisible(true);
   };
 
-  const handleFileInputChange = (event) => {
-    // Xử lý logic khi tệp tin được chọn
-    console.log('Selected file:', event.target.files[0]);
-    // Đóng popup
-    setPopupVisible(false);
-  };
+
 
 
   return (
@@ -31,7 +27,7 @@ const Sidebar = () => {
         </button>
         {isPopupVisible && (
         <div className="popup">
-          <input type="file" onChange={handleFileInputChange} />
+          <FileUpload />
           <button onClick={() => setPopupVisible(false)}>Đóng</button>
         </div>
       )}
