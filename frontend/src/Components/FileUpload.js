@@ -35,7 +35,6 @@ function FileUpload() {
   return (
     <div>
       <input type="file" accept=".pdf,.doc,.docx" onChange={handleUpload} />
-      {/* <button onClick={() => setPopupVisible(false)}>Đóng</button> */}
     </div>
   );
 }
