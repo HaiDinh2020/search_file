@@ -1,16 +1,18 @@
 package com.project3.elasticsearch.controller;
 
-import com.project3.elasticsearch.entity.File;
 //import com.project3.elasticsearch.repo.FileRepository;
+import com.project3.elasticsearch.repo.ReadFile;
 import com.project3.elasticsearch.service.FileUploadService;
+import com.project3.elasticsearch.service.ReadPDF;
+import org.apache.pdfbox.pdmodel.PDDocument;
+        import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+        import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStream;
 
 
 @RestController
@@ -19,29 +21,67 @@ public class FileUploadController {
 
     @Autowired
     FileUploadService fileUploadService;
+    @Autowired
+    ReadPDF readPDF;
 
-//    @Autowired
-//    FileRepository fileRepository;
+    @PostMapping("/upload")
+    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) {
+        if (file == null ) {
+            return ResponseEntity.badRequest().body("Vui lòng tải lên một tệp tin");
+        }
+        // check type file
+        try {
+            InputStream inputStream = file.getInputStream();
 
-//    @PostMapping("/upload")
-//    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
-//
-//        if (file == null ) {
-//            return ResponseEntity.badRequest().body("Vui lòng tải lên một tệp tin");
-//        }
-//
+            if (isPDF(inputStream)) {
+                String text = readPDF.readFile(file);
+                String filePath = fileUploadService.saveFileToDisk(file);
+                String fileName = file.getOriginalFilename();
+                fileUploadService.saveToElasticsearch(text, fileName, filePath);
+                return ResponseEntity.status(200).body("la pdf, " + text);
+            }
+
+//            if (isWord(inputStream)) {
+//                return ResponseEntity.badRequest().body("la word");
+//            }
+
+            return ResponseEntity.badRequest().body("Vui lòng tải lên một tệp tin pdf hoặc word");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Error checking file type");
+        }
 //        try {
-//            fileUploadService.uploadFile(file);
+//            String strings = fileUploadService.extractTextFromPdf(file);
+//            String filePath = fileUploadService.uploadFile(file);
+//            String fileName = file.getOriginalFilename();
+//            fileUploadService.indexTextInElasticsearch(strings, fileName, filePath);
+//            return ResponseEntity.ok("File đã được upload thành công: " + file.getOriginalFilename() );
 //
-////            String text = fileUploadService.extractTextFromPdf(file);
-//            // lưu vào elastichsearch
-////           fileUploadService.indexTextInElasticsearch(text);
-//            return ResponseEntity.ok("File đã được tải lên thành công" );
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi xử lý tệp tin");
+//        } catch (Exception e) {
+//            String message = "Không thể upload file: " + file.getOriginalFilename() + ". Error: " + e.getMessage();
+//            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
 //        }
-//    }
+    }
+
+    private boolean isPDF(InputStream inputStream) {
+        try {
+            // Attempt to load the PDF document
+            PDDocument.load(inputStream).close();
+            return true;
+        } catch (IOException e) {
+            // Not a PDF or an error occurred
+            return false;
+        }
+    }
+
+    private boolean isWord(InputStream inputStream) {
+        try {
+            XWPFDocument document = new XWPFDocument(inputStream);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
 
 //    @GetMapping("/allFile")
 //    public ResponseEntity<List> getAllFile() {

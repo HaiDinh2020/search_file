@@ -1,36 +1,26 @@
 package com.project3.elasticsearch.entity;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 
-//@AllArgsConstructor
-//@NoArgsConstructor
-@Data
-@Builder
 @Document(indexName = "words")
 public class Word {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     private String content;
-    @Field(type = FieldType.Integer)
-    private int fileId;
+    private String fileName;
+    private String filePath;
 
-    public Word() {
-    }
-
-    public Word(String id, String content, int fileId) {
-        this.id = id;
+    public Word(String content, String fileName, String filePath) {
         this.content = content;
-        this.fileId = fileId;
+        this.fileName = fileName;
+        this.filePath = filePath;
     }
 
     public String getId() {
@@ -49,11 +39,19 @@ public class Word {
         this.content = content;
     }
 
-    public int getFileId() {
-        return fileId;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setFileId(int fileId) {
-        this.fileId = fileId;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 }

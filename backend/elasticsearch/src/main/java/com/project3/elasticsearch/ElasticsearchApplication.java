@@ -7,15 +7,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 @Configuration
 @SpringBootApplication
-//@EnableJpaRepositories("com.project3.elasticsearch.elasticsearchrepo")
-//@EnableElasticsearchRepositories("com.project3.elasticsearch.repo")
+//@EnableJpaRepositories("com.project3.elasticsearch.repo")
+@EnableElasticsearchRepositories("com.project3.elasticsearch.elasticsearchrepo")
 //@ComponentScan("com.project3.elasticsearch.repo")
 public class ElasticsearchApplication {
 
@@ -36,32 +37,21 @@ public class ElasticsearchApplication {
 						.allowedOrigins("http://localhost:3000")
 						.allowedMethods("GET", "POST", "PUT", "DELETE")
 						.allowedHeaders("*");
-				registry.addMapping("/api/search")
+				registry.addMapping("/search")
 						.allowedOrigins("http://localhost:3000")
+						.allowedMethods("GET", "POST", "PUT", "DELETE")
+						.allowedHeaders("*");
+				registry.addMapping("/search/**")
+						.allowedOrigins("*")
+						.allowedMethods("GET", "POST", "PUT", "DELETE")
+						.allowedHeaders("*");
+				registry.addMapping("/exac/search/**")
+						.allowedOrigins("*")
 						.allowedMethods("GET", "POST", "PUT", "DELETE")
 						.allowedHeaders("*");
 			}
 		};
 	}
 
-//	@Bean
-//	public RestClient getRestClient() {
-//		RestClient restClient = RestClient.builder(
-//				new HttpHost("localhost", 9200)).build();
-//		return restClient;
-//	}
-//
-//	@Bean
-//	public ElasticsearchTransport getElasticsearchTransport() {
-//		return new RestClientTransport(
-//				getRestClient(), new JacksonJsonpMapper());
-//	}
-//
-//
-//	@Bean
-//	public ElasticsearchClient getElasticsearchClient(){
-//		ElasticsearchClient client = new ElasticsearchClient(getElasticsearchTransport());
-//		return client;
-//	}
 
 }
