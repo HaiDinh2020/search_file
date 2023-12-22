@@ -29,20 +29,6 @@ function HomePage() {
 
   const searchExac = async (word) => {
     try {
-      const response = await axios.get(`http://localhost:8080/search/exac/${word}`);
-      if (response.status === 200) {
-        console.log(response.data)
-        setAllFile(response.data);
-      } else {
-        alert("getfile KHÔNG thành công");
-      }
-    } catch (error) {
-      console.error('Lỗi khi tải lên tệp:', error);
-    }
-  }
-
-  const searchAny = async (word) => {
-    try {
       const response = await axios.get(`http://localhost:8080/search/${word}`);
       if (response.status === 200) {
         console.log(response.data)
@@ -55,12 +41,30 @@ function HomePage() {
     }
   }
 
+  const searchAny = async (word1, word2) => {
+    console.log("ssearcj");
+    try {
+      const response = await axios.get(`http://localhost:8080/search/multiword?word1=${word1}&word2=${word2}`);
+      console.log(response);
+      if (response.status === 200) {
+          console.log(response.data);
+          setAllFile(response.data);
+      } else {
+          alert("getfile KHÔNG thành công");
+      }
+    } catch (error) {
+        console.error(error);
+    }
+  }
+
   const handleSearch = async (searchTerm) => {
     if (searchTerm.includes('|')) {
-      const modifiedString = searchTerm.split('|').join('');
-      searchAny(modifiedString)
-    } else {
+      var arrayWord = searchTerm.split('|');
+      searchAny(arrayWord[0], arrayWord[1]);
+    } else if(searchTerm !== ""){
       searchExac(searchTerm);
+    } else {
+      getAllFile();
     }
   };
 
@@ -78,7 +82,7 @@ function HomePage() {
         className="mb-3"
       >
         <Tab eventKey="all" title="ALL">
-          <Item data={allFile} />
+          <Item data={allFile} getAllFile={getAllFile}/>
         </Tab>
         <Tab eventKey="pdf" title="PDF">
           <Item data={allFile} />
