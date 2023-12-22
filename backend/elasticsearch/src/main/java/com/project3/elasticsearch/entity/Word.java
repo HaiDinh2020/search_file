@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import java.util.Objects;
+
 @Document(indexName = "words")
 public class Word {
 
@@ -21,6 +23,10 @@ public class Word {
         this.content = content;
         this.fileName = fileName;
         this.filePath = filePath;
+    }
+
+    public Word() {
+
     }
 
     public String getId() {
@@ -53,5 +59,16 @@ public class Word {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Word myData = (Word) obj;
+        return Objects.equals(id, myData.id);
     }
 }

@@ -92,4 +92,26 @@ public class FileUploadService implements FileRepository{
     public void deleteAll() {
 
     }
+    public boolean deleteInDiskByPath(String fileName) {
+        try {
+            File fileToDelete = new File(pathname+fileName);
+
+            if (fileToDelete.exists()) {
+                if (fileToDelete.delete()) {
+                    System.out.println("File deleted successfully: " + fileName);
+                    return true;
+                } else {
+                    System.out.println("Failed to delete the file: " + fileName);
+                    return false;
+                }
+            } else {
+                System.out.println("File not found: " + fileName);
+                return false;
+            }
+        } catch (Exception e) {
+            // Log or handle the exception
+            e.printStackTrace();
+            throw new RuntimeException("Error deleting file: " + e.getMessage());
+        }
+    }
 }

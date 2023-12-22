@@ -49,6 +49,10 @@ public class ElasticsearchApplication {
 						.allowedOrigins("*")
 						.allowedMethods("GET", "POST", "PUT", "DELETE")
 						.allowedHeaders("*");
+				registry.addMapping("/search/multiword/**")
+						.allowedOrigins("*")
+						.allowedMethods("GET", "POST", "PUT", "DELETE")
+						.allowedHeaders("*");
 			}
 		};
 	}

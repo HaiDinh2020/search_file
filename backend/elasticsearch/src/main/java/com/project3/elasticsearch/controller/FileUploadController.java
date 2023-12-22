@@ -2,17 +2,21 @@ package com.project3.elasticsearch.controller;
 
 //import com.project3.elasticsearch.repo.FileRepository;
 import com.project3.elasticsearch.repo.ReadFile;
+import com.project3.elasticsearch.service.ReadWord;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import com.project3.elasticsearch.service.FileUploadService;
 import com.project3.elasticsearch.service.ReadPDF;
 import org.apache.pdfbox.pdmodel.PDDocument;
-        import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
         import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Objects;
 
 
 @RestController
@@ -24,6 +28,9 @@ public class FileUploadController {
     @Autowired
     ReadPDF readPDF;
 
+    @Autowired
+    ReadWord readWord;
+
     @PostMapping("/upload")
     public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) {
         if (file == null ) {
@@ -32,20 +39,22 @@ public class FileUploadController {
         // check type file
         try {
             InputStream inputStream = file.getInputStream();
+            String extension = file.getOriginalFilename().split("\\.")[1];
+            String textFile = "";
 
             if (isPDF(inputStream)) {
-                String text = readPDF.readFile(file);
-                String filePath = fileUploadService.saveFileToDisk(file);
-                String fileName = file.getOriginalFilename();
-                fileUploadService.saveToElasticsearch(text, fileName, filePath);
-                return ResponseEntity.status(200).body("la pdf, " + text);
+                textFile = readPDF.readFile(file);
+            } else if (Objects.equals(extension, "docx")) {
+                textFile = readWord.readFile(file);
+            } else {
+                return ResponseEntity.badRequest().body("Vui lòng tải lên một tệp tin pdf hoặc word");
             }
 
-//            if (isWord(inputStream)) {
-//                return ResponseEntity.badRequest().body("la word");
-//            }
+            String filePath = fileUploadService.saveFileToDisk(file);
+            String fileName = file.getOriginalFilename();
+            fileUploadService.saveToElasticsearch(textFile, fileName, filePath);
+            return ResponseEntity.status(200).body("Upload file thành công");
 
-            return ResponseEntity.badRequest().body("Vui lòng tải lên một tệp tin pdf hoặc word");
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Error checking file type");
