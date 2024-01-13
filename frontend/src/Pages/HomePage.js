@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import Table from 'react-bootstrap/Table';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import axios from 'axios';
@@ -10,6 +9,8 @@ import SearchBar from '../Components/SearchBar';
 function HomePage() {
 
   const [allFile, setAllFile] = useState([{}, {}]);
+  const [allPdf, setAllPdf] = useState([{}, {}]);
+  const [allWord, setAllWord] = useState([{}, {}]);
 
   const getAllFile = async () => {
     try {
@@ -26,6 +27,36 @@ function HomePage() {
     }
 
   };
+
+  const getPdfFile = async () => {
+    try {
+      axios.get(`http://localhost:8080/search/pdf`
+      ).then((response) => {
+        if (response.status === 200) {
+          setAllPdf(response.data)
+        } else {
+          alert("getfile KHÔNG thành công")
+        }
+      })
+    } catch (error) {
+      console.error('Lỗi khi tải lên tệp:', error);
+    }
+  }
+
+  const getWordFile = async () => {
+    try {
+      axios.get(`http://localhost:8080/search/word`
+      ).then((response) => {
+        if (response.status === 200) {
+          setAllWord(response.data)
+        } else {
+          alert("getfile KHÔNG thành công")
+        }
+      })
+    } catch (error) {
+      console.error('Lỗi khi tải lên tệp:', error);
+    }
+  }
 
   const searchExac = async (word) => {
     try {
@@ -70,6 +101,8 @@ function HomePage() {
 
   useEffect(() => {
     getAllFile();
+    getPdfFile();
+    getWordFile();
   }, [])
 
   return (
@@ -85,10 +118,10 @@ function HomePage() {
           <Item data={allFile} getAllFile={getAllFile}/>
         </Tab>
         <Tab eventKey="pdf" title="PDF">
-          <Item data={allFile} />
+          <Item data={allPdf} />
         </Tab>
         <Tab eventKey="word" title="WORD">
-          Tab content for Loooonger Tab
+          <Item data={allWord} />
         </Tab>
       </Tabs>
 
