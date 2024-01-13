@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public interface WordRepository extends ElasticsearchRepository<Word, String> {
     List<Word> findByContent(String content);
-
+    Iterable<Word> findByFileNameEndingWith(String suffix);
     @Query("{\"bool\": {\"must\": [{\"match_phrase\": {\"content\": \"?0\"}}]}}")
     List<SearchHit<Word>> customFindByExacContent(String content);
 

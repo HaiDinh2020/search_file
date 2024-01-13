@@ -29,6 +29,16 @@ public class WordController {
         return wordServices.getAll();
     }
 
+    @GetMapping("/pdf")
+    public Iterable<Word> getPdfFile() {
+        return  wordServices.getAllPdf();
+    }
+
+    @GetMapping("/word")
+    public Iterable<Word> getWordFile() {
+        return  wordServices.getAllWord();
+    }
+
     @GetMapping("exac/{word}")
     public List<SearchHit<Word>> searchByPhrase(@PathVariable String word) {
         return wordServices.searchByPhrase(word);
@@ -61,5 +71,4 @@ public class WordController {
             return ResponseEntity.badRequest().body("xóa không thành công");
         }
     }
-
 }

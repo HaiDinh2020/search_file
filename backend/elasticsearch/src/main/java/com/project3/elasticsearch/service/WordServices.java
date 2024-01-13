@@ -31,6 +31,13 @@ public class WordServices  {
         return wordRepository.findAll();
     }
 
+    public Iterable<Word> getAllPdf() {
+        return wordRepository.findByFileNameEndingWith(".pdf");
+    }
+
+    public Iterable<Word> getAllWord() {
+        return wordRepository.findByFileNameEndingWith(".docx");
+    }
     public void deleteAll() {
         wordRepository.deleteAll();
     }
